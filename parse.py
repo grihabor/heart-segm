@@ -2,10 +2,20 @@ from scipy.io import loadmat
 import numpy as np
 import os
 import skimage.morphology as morph
+from sys import argv, exit
 
+if len(argv) < 2:
+    print('Usage: python parse.py <data_dir> [-v]')
+    exit(0)
+
+SHOW_PLOTS = False
 
 #batch_size = 100
-SHOW_PLOTS = False
+if len(argv) == 3:
+    if argv[2] != '-v':
+        print('Unknown flag', argv[2])
+        exit(0)
+    SHOW_PLOTS = True
 
 
 if SHOW_PLOTS:
