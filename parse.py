@@ -10,7 +10,6 @@ if len(argv) < 2:
 
 SHOW_PLOTS = False
 
-#batch_size = 100
 if len(argv) == 3:
     if argv[2] != '-v':
         print('Unknown flag', argv[2])
@@ -21,21 +20,22 @@ if len(argv) == 3:
 if SHOW_PLOTS:
     import matplotlib.pyplot as plt
 
-data_dir = 'data/'
-seg_filename = data_dir + 'manual_seg/manual_seg_32points_pat{}.mat'
-img_filename = data_dir + 'mrimages/sol_yxzt_pat{}.mat'
+data_dir = os.path.normpath(argv[1]) + '/'
+seg_filename_mask = data_dir + 'manual_seg/manual_seg_32points_pat{}.mat'
+img_filename_mask = data_dir + 'mrimages/sol_yxzt_pat{}.mat'
 
 input_dir = data_dir + 'input/'
 if not os.path.exists(input_dir):
-    os.makedirs(input_dir)
+    os.mkdir(input_dir)
 output_dir = data_dir + 'output/'
 if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+    os.mkdir(output_dir)
 bbox_dir = data_dir + 'bbox/'
 if not os.path.exists(bbox_dir):
-    os.makedirs(bbox_dir)
+    os.mkdir(bbox_dir)
 
-batch_filename = 'batch{}.npy'
+batch_filename = 'batch_{}.npy'
+
 
 def save_batch(batch):
     '''
@@ -65,21 +65,21 @@ def fill_poly(poly_y, poly_x, shape):
 max_bbox = [0, 0]
 
 
-cur_batch = [None, None, None]
 count = 0
 batch_count = 0
 i = 1
 while True:
-    seg = seg_filename.format(i)
-    img = img_filename.format(i)
+    cur_batch = [None, None, None]
+    seg_filename = seg_filename_mask.format(i)
+    img_filename = img_filename_mask.format(i)
     i += 1
  
-    print(seg)
-    if not os.path.isfile(seg):
+    print(seg_filename)
+    if not os.path.isfile(seg_filename):
         break
 
-    slices = loadmat(img)['sol_yxzt']
-    segmentations = loadmat(seg)['manual_seg_32points']
+    slices = loadmat(img_filename)['sol_yxzt']
+    segmentations = loadmat(seg_filename)['manual_seg_32points']
     
     for z in range(slices.shape[2]):
         for t in range(slices.shape[3]):
@@ -135,7 +135,6 @@ while True:
                     plt.show()
 
     save_batch(cur_batch)
-    cur_batch = [None, None, None]
     batch_count += 1
 
     print('count:', count)
