@@ -4,4 +4,5 @@
 [A Fully Convolutional Neural Network for Cardiac Segmentation in Short-Axis MRI](https://arxiv.org/pdf/1604.00494v1.pdf)
 ## Data
 [Cariac MRI dataset - original](http://www.cse.yorku.ca/~mridataset/)  
-[Cariac MRI dataset - copy](https://yadi.sk/d/c4XzjChMxAyZc)
+[Sunnybrook Cardiac Data](http://www.cardiacatlas.org/studies/sunnybrook-cardiac-data/)
+
