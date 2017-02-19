@@ -1,9 +1,11 @@
 import caffe
-import surgery, score
+#import surgery, score
 
 import numpy as np
 import os
 import sys
+
+import surgery, score
 
 try:
     import setproctitle
