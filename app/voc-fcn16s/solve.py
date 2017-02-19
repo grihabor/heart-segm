@@ -14,8 +14,8 @@ except:
 weights = 'fcn16s-heavy-pascal.caffemodel'
 
 # init
-caffe.set_device(int(sys.argv[1]))
-caffe.set_mode_gpu()
+#caffe.set_device(int(sys.argv[1]))
+caffe.set_mode_cpu()
 
 solver = caffe.SGDSolver('solver.prototxt')
 solver.net.copy_from(weights)

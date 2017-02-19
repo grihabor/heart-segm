@@ -31,4 +31,4 @@ build:
 	docker build -t grihabor/caffe . 
 
 run:
-	docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:gpu /bin/bash
+	docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:cpu /bin/bash -c "cd /root/project; bash"

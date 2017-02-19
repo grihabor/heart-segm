@@ -1,4 +1,4 @@
 .idea
-data
+app/data
 fcn.berkeleyvision.org
 *.caffemodel
