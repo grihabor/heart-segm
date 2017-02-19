@@ -1,6 +1,9 @@
 from scipy.io import loadmat
 import numpy as np
 import os
+
+from skimage.color import gray2rgb
+from skimage.io import imsave
 import skimage.morphology as morph
 from sys import argv, exit
 
@@ -16,9 +19,9 @@ if len(argv) == 3:
         exit(0)
     SHOW_PLOTS = True
 
+img_index = 0
 
-if SHOW_PLOTS:
-    import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 data_dir = os.path.normpath(argv[1]) + '/'
 seg_filename_mask = data_dir + 'manual_seg/manual_seg_32points_pat{}.mat'
@@ -95,14 +98,13 @@ while True:
                 segm[1] = segmentation[32:, :]
                 segm[1, 0] = segm[1, -1]
                 
-                mask, skip = fill_poly(segm[0, :, 1], segm[0, :, 0], slice.shape[:2])
-                t, bbox = fill_poly(segm[1, :, 1], segm[1, :, 0], slice.shape[:2])
-                mask += t
+                mask1, _ = fill_poly(segm[0, :, 1], segm[0, :, 0], slice.shape[:2])
+                mask2, bbox = fill_poly(segm[1, :, 1], segm[1, :, 0], slice.shape[:2])
+                mask = mask1 + mask2
                 count += 1
                 
                 max_bbox = [max(max_bbox[0], bbox[2] - bbox[0]),
                             max(max_bbox[1], bbox[3] - bbox[1])]
-                
 
                 if cur_batch[0] is None:
                     cur_batch[0] = np.array([slice], dtype=np.float16)
@@ -119,6 +121,10 @@ while True:
                     batch_count += 1
                 '''
 
+                plt.imsave('{}images/img_{}.png'.format(data_dir, img_index), slice, cmap='gray')
+                plt.imsave('{}mask1/img_{}.png'.format(data_dir, img_index), mask1, cmap='gray')
+                plt.imsave('{}mask2/img_{}.png'.format(data_dir, img_index), mask2, cmap='gray')
+                img_index += 1
                 if SHOW_PLOTS:
                     plt.subplot(121)
                     plt.plot(segm[0, :, 0], segm[0, :, 1])
