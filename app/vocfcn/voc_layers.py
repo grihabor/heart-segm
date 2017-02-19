@@ -212,9 +212,10 @@ class SBDDSegDataLayer(caffe.Layer):
         - subtract mean
         - transpose to channel x height x width order
         """
-        im = Image.open('{}/img/{}.jpg'.format(self.sbdd_dir, idx))
+        im = Image.open('{}/img/{}.png'.format(self.sbdd_dir, idx))
+
         in_ = np.array(im, dtype=np.float32)
-        in_ = in_[:,:,::-1]
+        in_ = in_[:,:,2::-1]
         in_ -= self.mean
         in_ = in_.transpose((2,0,1))
         return in_
@@ -225,8 +226,9 @@ class SBDDSegDataLayer(caffe.Layer):
         Load label image as 1 x height x width integer array of label indices.
         The leading singleton dimension is required by the loss.
         """
-        import scipy.io
-        mat = scipy.io.loadmat('{}/cls/{}.mat'.format(self.sbdd_dir, idx))
-        label = mat['GTcls'][0]['Segmentation'][0].astype(np.uint8)
+        #import scipy.io
+        #mat = scipy.io.loadmat('{}/cls/{}.mat'.format(self.sbdd_dir, idx))
+        #label = mat['GTcls'][0]['Segmentation'][0].astype(np.uint8)
+        label = np.load('{}/cls/{}.npy'.format(self.sbdd_dir, idx))
         label = label[np.newaxis, ...]
         return label

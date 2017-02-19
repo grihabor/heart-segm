@@ -122,8 +122,11 @@ while True:
                 '''
 
                 plt.imsave('{}images/img_{}.png'.format(data_dir, img_index), slice, cmap='gray')
-                plt.imsave('{}mask1/img_{}.png'.format(data_dir, img_index), mask1, cmap='gray')
-                plt.imsave('{}mask2/img_{}.png'.format(data_dir, img_index), mask2, cmap='gray')
+
+                np.save('{}mask1/img_{}'.format(data_dir, img_index), mask1)
+                np.save('{}mask2/img_{}'.format(data_dir, img_index), mask2)
+                #plt.imsave('{}mask1/img_{}.png'.format(data_dir, img_index), mask1, cmap='gray')
+                #plt.imsave('{}mask2/img_{}.png'.format(data_dir, img_index), mask2, cmap='gray')
                 img_index += 1
                 if SHOW_PLOTS:
                     plt.subplot(121)
