@@ -473,10 +473,10 @@ layer {
   }
 }
 layer {
-  name: "score_fr"
+  name: "score_fr_output2"
   type: "Convolution"
   bottom: "fc7"
-  top: "score_fr"
+  top: "score_fr_output2"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -486,31 +486,31 @@ layer {
     decay_mult: 0
   }
   convolution_param {
-    num_output: 21
+    num_output: 2
     pad: 0
     kernel_size: 1
   }
 }
 layer {
-  name: "upscore2"
+  name: "upscore2_output2"
   type: "Deconvolution"
-  bottom: "score_fr"
-  top: "upscore2"
+  bottom: "score_fr_output2"
+  top: "upscore2_output2"
   param {
     lr_mult: 0
   }
   convolution_param {
-    num_output: 21
+    num_output: 2
     bias_term: false
     kernel_size: 4
     stride: 2
   }
 }
 layer {
-  name: "score_pool4"
+  name: "score_pool4_output2"
   type: "Convolution"
   bottom: "pool4"
-  top: "score_pool4"
+  top: "score_pool4_output2"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -520,64 +520,64 @@ layer {
     decay_mult: 0
   }
   convolution_param {
-    num_output: 21
+    num_output: 2
     pad: 0
     kernel_size: 1
   }
 }
 layer {
-  name: "score_pool4c"
+  name: "score_pool4c_output2"
   type: "Crop"
-  bottom: "score_pool4"
-  bottom: "upscore2"
-  top: "score_pool4c"
+  bottom: "score_pool4_output2"
+  bottom: "upscore2_output2"
+  top: "score_pool4c_output2"
   crop_param {
     axis: 2
     offset: 5
   }
 }
 layer {
-  name: "fuse_pool4"
+  name: "fuse_pool4_output2"
   type: "Eltwise"
-  bottom: "upscore2"
-  bottom: "score_pool4c"
-  top: "fuse_pool4"
+  bottom: "upscore2_output2"
+  bottom: "score_pool4c_output2"
+  top: "fuse_pool4_output2"
   eltwise_param {
     operation: SUM
   }
 }
 layer {
-  name: "upscore16"
+  name: "upscore16_output2"
   type: "Deconvolution"
-  bottom: "fuse_pool4"
-  top: "upscore16"
+  bottom: "fuse_pool4_output2"
+  top: "upscore16_output2"
   param {
     lr_mult: 0
   }
   convolution_param {
-    num_output: 21
+    num_output: 2
     bias_term: false
     kernel_size: 32
     stride: 16
   }
 }
 layer {
-  name: "score"
+  name: "score_output2"
   type: "Crop"
-  bottom: "upscore16"
+  bottom: "upscore16_output2"
   bottom: "data"
-  top: "score"
+  top: "score_output2"
   crop_param {
     axis: 2
     offset: 27
   }
 }
 layer {
-  name: "loss"
+  name: "loss_output2"
   type: "SoftmaxWithLoss"
-  bottom: "score"
+  bottom: "score_output2"
   bottom: "label"
-  top: "loss"
+  top: "loss_output2"
   loss_param {
     ignore_label: 255
     normalize: false
