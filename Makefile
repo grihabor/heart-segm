@@ -31,4 +31,7 @@ build:
 	docker build -t grihabor/caffe . 
 
 run:
+	docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:cpu /bin/bash -c "cd /root/project/app/vocfcn; python solve.py"
+
+bash:
 	docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:cpu /bin/bash -c "cd /root/project; bash"

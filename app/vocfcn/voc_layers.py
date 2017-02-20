@@ -47,7 +47,7 @@ class VOCSegDataLayer(caffe.Layer):
             raise Exception("Do not define a bottom.")
 
         # load indices for images and labels
-        split_f  = '{}/ImageSets/Segmentation/{}.txt'.format(self.voc_dir,
+        split_f  = '{}/{}.txt'.format(self.voc_dir,
                 self.split)
         self.indices = open(split_f, 'r').read().splitlines()
         self.idx = 0
@@ -84,10 +84,8 @@ class VOCSegDataLayer(caffe.Layer):
             if self.idx == len(self.indices):
                 self.idx = 0
 
-
     def backward(self, top, propagate_down, bottom):
         pass
-
 
     def load_image(self, idx):
         """
@@ -97,21 +95,20 @@ class VOCSegDataLayer(caffe.Layer):
         - subtract mean
         - transpose to channel x height x width order
         """
-        im = Image.open('{}/JPEGImages/{}.jpg'.format(self.voc_dir, idx))
-        in_ = np.array(im, dtype=np.float32)
-        in_ = in_[:,:,::-1]
-        in_ -= self.mean
-        in_ = in_.transpose((2,0,1))
-        return in_
+        im = Image.open('{}/img/{}.png'.format(self.voc_dir, idx))
 
+        in_ = np.array(im, dtype=np.float32)
+        in_ = in_[:, :, 2::-1]
+        in_ -= self.mean
+        in_ = in_.transpose((2, 0, 1))
+        return in_
 
     def load_label(self, idx):
         """
         Load label image as 1 x height x width integer array of label indices.
         The leading singleton dimension is required by the loss.
         """
-        im = Image.open('{}/SegmentationClass/{}.png'.format(self.voc_dir, idx))
-        label = np.array(im, dtype=np.uint8)
+        label = np.load('{}/cls/{}.npy'.format(self.voc_dir, idx))
         label = label[np.newaxis, ...]
         return label
 
@@ -232,3 +229,4 @@ class SBDDSegDataLayer(caffe.Layer):
         label = np.load('{}/cls/{}.npy'.format(self.sbdd_dir, idx))
         label = label[np.newaxis, ...]
         return label
+
