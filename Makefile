@@ -30,8 +30,14 @@ dirs:
 build:
 	docker build -t grihabor/caffe . 
 
-run:
+run-cpu:
 	docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:cpu /bin/bash -c "cd /root/project/app/vocfcn; python solve.py"
 
-bash:
+run-gpu:
+	nvidia-docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:gpu /bin/bash -c "cd /root/project/app/vocfcn; python solve.py"
+
+bash-cpu:
 	docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:cpu /bin/bash -c "cd /root/project; bash"
+
+bash-gpu:
+	nvidia-docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:gpu /bin/bash -c "cd /root/project; bash"

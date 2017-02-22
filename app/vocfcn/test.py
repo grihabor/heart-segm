@@ -28,8 +28,8 @@ image = load_image('../../data/sbdd/dataset', 'img_0')
 
 res = net.forward()
 
-score = res['score'].transpose((2, 3, 1, 0))
-print(score.shape)
+score = res['score_output2'].transpose((2, 3, 1, 0))
+print('score shape:', score.shape)
 score = score[:, :, :, 0]
 print(score.shape)
 
