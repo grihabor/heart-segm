@@ -34,7 +34,7 @@ run-cpu:
 	docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:cpu /bin/bash -c "cd /root/project/app/vocfcn; python solve.py"
 
 run-gpu:
-	nvidia-docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:gpu /bin/bash -c "cd /root/project/app/vocfcn; python solve.py"
+	nvidia-docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:gpu /bin/bash -c "cd /root/project/app/vocfcn; python solve.py -gpu"
 
 bash-cpu:
 	docker run -i -t -v $(CUR_DIR):/root/project bvlc/caffe:cpu /bin/bash -c "cd /root/project; bash"

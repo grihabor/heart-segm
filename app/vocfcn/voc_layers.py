@@ -150,6 +150,7 @@ class SBDDSegDataLayer(caffe.Layer):
         self.mean = np.array(params['mean'])
         self.random = params.get('randomize', True)
         self.seed = params.get('seed', None)
+        
 
         # two tops: data and label
         if len(top) != 2:

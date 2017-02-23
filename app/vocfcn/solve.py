@@ -14,13 +14,19 @@ except:
     pass
 
 weights = 'fcn16s-heavy-pascal.caffemodel'
+#weights = 'snapshot/train_iter_1000.caffemodel'
 
 # init
-caffe.set_device(0)
-caffe.set_mode_gpu()
+if '-gpu' in sys.argv:
+    caffe.set_mode_gpu()
+    caffe.set_device(0)
+else:
+    caffe.set_mode_cpu()
 
 solver = caffe.SGDSolver('solver.prototxt')
 solver.net.copy_from(weights)
+
+print('Weights copied!')
 
 # surgeries
 interp_layers = [k for k in solver.net.params.keys() if 'up' in k]
@@ -31,4 +37,5 @@ val = np.loadtxt('../../data/segvalid11.txt', dtype=str)
 
 for _ in range(25):
     solver.step(4000)
-    score.seg_tests(solver, False, val, layer='score')
+
+    score.seg_tests(solver, False, val, layer='score_output2')

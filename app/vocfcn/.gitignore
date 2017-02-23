@@ -1,0 +1,4 @@
+output
+snapshot
+*.caffemodel
+*.solverstate

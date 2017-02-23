@@ -26,7 +26,8 @@ def compute_hist(net, save_dir, dataset, layer='score', gt='label'):
             im = Image.fromarray(net.blobs[layer].data[0].argmax(0).astype(np.uint8), mode='P')
             im.save(os.path.join(save_dir, idx + '.png'))
         # compute the loss as well
-        loss += net.blobs['loss'].data.flat[0]
+        if 'loss' in net.blobs:
+            loss += net.blobs['loss'].data.flat[0]
     return hist, loss / len(dataset)
 
 def seg_tests(solver, save_format, dataset, layer='score', gt='label'):
