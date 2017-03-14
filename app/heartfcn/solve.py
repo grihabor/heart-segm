@@ -13,8 +13,7 @@ try:
 except:
     pass
 
-weights = 'fcn16s-heavy-pascal.caffemodel'
-#weights = 'snapshot/train_iter_1000.caffemodel'
+# weights = 'snapshot/train_iter_1000.caffemodel'
 
 # init
 if '-gpu' in sys.argv:
@@ -24,9 +23,6 @@ else:
     caffe.set_mode_cpu()
 
 solver = caffe.SGDSolver('solver.prototxt')
-solver.net.copy_from(weights)
-
-print('Weights copied!')
 
 # surgeries
 interp_layers = [k for k in solver.net.params.keys() if 'up' in k]
