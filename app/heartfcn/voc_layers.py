@@ -98,7 +98,7 @@ class VOCSegDataLayer(caffe.Layer):
         im = Image.open('{}/img/{}.png'.format(self.voc_dir, idx))
 
         in_ = np.array(im, dtype=np.float32)
-        in_ = in_[:, :, 2::-1]
+        in_ = in_[:, :, :1]
         in_ -= self.mean
         in_ = in_.transpose((2, 0, 1))
         return in_
@@ -213,7 +213,7 @@ class SBDDSegDataLayer(caffe.Layer):
         im = Image.open('{}/img/{}.png'.format(self.sbdd_dir, idx))
 
         in_ = np.array(im, dtype=np.float32)
-        in_ = in_[:,:,2::-1]
+        in_ = in_[:, :, :1]
         in_ -= self.mean
         in_ = in_.transpose((2,0,1))
         return in_

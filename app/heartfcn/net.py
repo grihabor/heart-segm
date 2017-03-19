@@ -13,13 +13,13 @@ def max_pool(bottom, ks=2, stride=2):
 
 def fcn(split):
     n = caffe.NetSpec()
-    pydata_params = dict(split=split, mean=(104.00699, 116.66877, 122.67892),
+    pydata_params = dict(split=split, mean=(110.),
             seed=1337)
     if split == 'train':
         pydata_params['sbdd_dir'] = '../../data/sbdd/dataset'
         pylayer = 'SBDDSegDataLayer'
     else:
-        pydata_params['voc_dir'] = '../../data/pascal/VOC2011'
+        pydata_params['voc_dir'] = '../../data/sbdd/dataset'
         pylayer = 'VOCSegDataLayer'
     n.data, n.label = L.Python(module='voc_layers', layer=pylayer,
             ntop=2, param_str=str(pydata_params))
@@ -48,25 +48,27 @@ def fcn(split):
     n.conv5_3, n.relu5_3 = conv_relu(n.relu5_2, 512)
     n.pool5 = max_pool(n.relu5_3)
 
+    label_count = 2
+
     # fully conv
     n.fc6, n.relu6 = conv_relu(n.pool5, 4096, ks=7, pad=0)
     n.drop6 = L.Dropout(n.relu6, dropout_ratio=0.5, in_place=True)
     n.fc7, n.relu7 = conv_relu(n.drop6, 4096, ks=1, pad=0)
     n.drop7 = L.Dropout(n.relu7, dropout_ratio=0.5, in_place=True)
-    n.score_fr = L.Convolution(n.drop7, num_output=21, kernel_size=1, pad=0,
+    n.score_fr = L.Convolution(n.drop7, num_output=label_count, kernel_size=1, pad=0,
         param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
     n.upscore2 = L.Deconvolution(n.score_fr,
-        convolution_param=dict(num_output=21, kernel_size=4, stride=2,
+        convolution_param=dict(num_output=label_count, kernel_size=4, stride=2,
             bias_term=False),
         param=[dict(lr_mult=0)])
 
-    n.score_pool4 = L.Convolution(n.pool4, num_output=21, kernel_size=1, pad=0,
+    n.score_pool4 = L.Convolution(n.pool4, num_output=label_count, kernel_size=1, pad=0,
         param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
     n.score_pool4c = crop(n.score_pool4, n.upscore2)
     n.fuse_pool4 = L.Eltwise(n.upscore2, n.score_pool4c,
             operation=P.Eltwise.SUM)
     n.upscore16 = L.Deconvolution(n.fuse_pool4,
-        convolution_param=dict(num_output=21, kernel_size=32, stride=16,
+        convolution_param=dict(num_output=label_count, kernel_size=32, stride=16,
             bias_term=False),
         param=[dict(lr_mult=0)])
 
@@ -81,7 +83,7 @@ def make_net():
         f.write(str(fcn('train')))
 
     with open('val.prototxt', 'w') as f:
-        f.write(str(fcn('seg11valid')))
+        f.write(str(fcn('train')))
 
 if __name__ == '__main__':
     make_net()

@@ -10,7 +10,7 @@ import surgery, score
 try:
     import setproctitle
     setproctitle.setproctitle(os.path.basename(os.getcwd()))
-except:
+except ImportError:
     pass
 
 # weights = 'snapshot/train_iter_1000.caffemodel'
