@@ -3,8 +3,10 @@ from caffe import layers as L, params as P
 from caffe.coord_map import crop
 
 def conv_relu(bottom, nout, ks=3, stride=1, pad=1):
-    conv = L.Convolution(bottom, kernel_size=ks, stride=stride,
-        num_output=nout, pad=pad,
+    conv = L.Convolution(
+        bottom, kernel_size=ks, stride=stride, num_output=nout, pad=pad,
+        weight_filler=dict(type='xavier'),
+        bias_filler=dict(type="constant", value=0.1),
         param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
     return conv, L.ReLU(conv, in_place=True)
 
@@ -36,7 +38,10 @@ def fcn(split):
     #n.conv3_3, n.relu3_3 = conv_relu(n.relu3_2, 256)
     n.pool3 = max_pool(n.relu3_1)
 
-    n.conv4_1, n.relu4_1 = conv_relu(n.pool3, 512)
+    n.conv6_1, n.relu6_1 = conv_relu(n.pool3, 512)
+    n.pool6 = max_pool(n.relu6_1)
+
+    n.conv4_1, n.relu4_1 = conv_relu(n.pool6, 512)
     #n.conv4_2, n.relu4_2 = conv_relu(n.relu4_1, 512)
     #n.conv4_3, n.relu4_3 = conv_relu(n.relu4_2, 512)
     n.pool4 = max_pool(n.relu4_1)
@@ -46,13 +51,11 @@ def fcn(split):
     #n.conv5_3, n.relu5_3 = conv_relu(n.relu5_2, 512)
     n.pool5 = max_pool(n.relu5_1)
 
-    #n.conv6_1, n.relu6_1 = conv_relu(n.pool5, 512)
-    #n.pool6 = max_pool(n.relu6_1)
 
     label_count = 2
 
     # fully conv
-    n.fc6, n.relu6 = conv_relu(n.pool5, 4096, ks=7, pad=0)
+    n.fc6, n.relu6 = conv_relu(n.pool5, 4096, ks=3, pad=0)
     n.drop6 = L.Dropout(n.relu6, dropout_ratio=0.5, in_place=True)
     n.fc7, n.relu7 = conv_relu(n.drop6, 4096, ks=1, pad=0)
     n.drop7 = L.Dropout(n.relu7, dropout_ratio=0.5, in_place=True)
@@ -65,11 +68,13 @@ def fcn(split):
 
     n.score_pool4 = L.Convolution(n.pool4, num_output=label_count, kernel_size=1, pad=0,
         param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
+
+
     n.score_pool4c = crop(n.score_pool4, n.upscore2)
     n.fuse_pool4 = L.Eltwise(n.upscore2, n.score_pool4c,
             operation=P.Eltwise.SUM)
     n.upscore16 = L.Deconvolution(n.fuse_pool4,
-        convolution_param=dict(num_output=label_count, kernel_size=32, stride=16,
+        convolution_param=dict(num_output=label_count, kernel_size=64, stride=32,
             bias_term=False),
         param=[dict(lr_mult=0)])
 
