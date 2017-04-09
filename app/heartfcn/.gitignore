@@ -1,2 +1,4 @@
 output
 snapshot
+train.prototxt
+val.prototxt
