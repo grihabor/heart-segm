@@ -29,19 +29,17 @@ def load_image(img_dir, idx):
 
 
 def get_output(i):
-    image = load_image('../../data/sbdd/dataset', 'img_{}'.format(i))
-    res = net.forward()
+    #image = load_image('../../data/sbdd/dataset', 'img_{}'.format(i))
+    res = net.forward(blobs=['data'])
 
-    print(res.keys())
+    image = res['data'].transpose((2, 3, 1, 0))
+    image = image[:, :, :, 0] / 255.
+
 
     score = res['score'].transpose((2, 3, 1, 0))
     label = res['label'].transpose((2, 3, 1, 0))
-    print('score shape:', score.shape)
-    print('label shape:', label.shape)
     score = score[:, :, :, 0]
     label = label[:, :, 0, 0]
-    print(score.shape)
-    print(label.shape, label.dtype)
 
     width = 3
     height = 2

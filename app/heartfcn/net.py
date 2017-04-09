@@ -13,7 +13,7 @@ def max_pool(bottom, ks=2, stride=2):
 
 def fcn(split):
     n = caffe.NetSpec()
-    pydata_params = dict(split=split, mean=(110.),
+    pydata_params = dict(split=split, mean=(0.),
             seed=1337)
     if split == 'train':
         pydata_params['sbdd_dir'] = '../../data/sbdd/dataset'
@@ -86,7 +86,7 @@ def make_net():
         f.write(str(fcn('train')))
 
     with open('val.prototxt', 'w') as f:
-        f.write(str(fcn('train')))
+        f.write(str(fcn('test')))
 
 if __name__ == '__main__':
     make_net()

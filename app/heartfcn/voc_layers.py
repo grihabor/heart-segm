@@ -1,9 +1,14 @@
-import caffe
+try:
+    import caffe
+except ImportError as e:
+    caffe = None
+    raise e
 
 import numpy as np
 from PIL import Image
 
 import random
+
 
 class VOCSegDataLayer(caffe.Layer):
     """
@@ -33,7 +38,7 @@ class VOCSegDataLayer(caffe.Layer):
         """
         # config
         params = eval(self.param_str)
-        self.voc_dir = params['voc_dir']
+        self.data_dir = params['voc_dir']
         self.split = params['split']
         self.mean = np.array(params['mean'])
         self.random = params.get('randomize', True)
@@ -47,8 +52,8 @@ class VOCSegDataLayer(caffe.Layer):
             raise Exception("Do not define a bottom.")
 
         # load indices for images and labels
-        split_f  = '{}/{}.txt'.format(self.voc_dir,
-                self.split)
+        split_f  = '{}/{}.txt'.format(self.data_dir,
+                                      self.split)
         self.indices = open(split_f, 'r').read().splitlines()
         self.idx = 0
 
@@ -95,7 +100,10 @@ class VOCSegDataLayer(caffe.Layer):
         - subtract mean
         - transpose to channel x height x width order
         """
-        im = Image.open('{}/img/{}.png'.format(self.voc_dir, idx))
+
+        filename = '{}/img/{}.png'.format(self.data_dir, idx)
+        im = Image.open(filename)
+        print('load', filename)
 
         in_ = np.array(im, dtype=np.float32)
         in_ = in_[:, :, :1]
@@ -108,7 +116,9 @@ class VOCSegDataLayer(caffe.Layer):
         Load label image as 1 x height x width integer array of label indices.
         The leading singleton dimension is required by the loss.
         """
-        label = np.load('{}/cls/{}.npy'.format(self.voc_dir, idx))
+        filename = '{}/cls/{}.npy'.format(self.data_dir, idx)
+        label = np.load(filename)
+        print('load', filename)
         label = label[np.newaxis, ...]
         return label
 
@@ -145,7 +155,7 @@ class SBDDSegDataLayer(caffe.Layer):
         """
         # config
         params = eval(self.param_str)
-        self.sbdd_dir = params['sbdd_dir']
+        self.data_dir = params['sbdd_dir']
         self.split = params['split']
         self.mean = np.array(params['mean'])
         self.random = params.get('randomize', True)
@@ -160,8 +170,8 @@ class SBDDSegDataLayer(caffe.Layer):
             raise Exception("Do not define a bottom.")
 
         # load indices for images and labels
-        split_f  = '{}/{}.txt'.format(self.sbdd_dir,
-                self.split)
+        split_f  = '{}/{}.txt'.format(self.data_dir,
+                                      self.split)
         self.indices = open(split_f, 'r').read().splitlines()
         self.idx = 0
 
@@ -210,7 +220,9 @@ class SBDDSegDataLayer(caffe.Layer):
         - subtract mean
         - transpose to channel x height x width order
         """
-        im = Image.open('{}/img/{}.png'.format(self.sbdd_dir, idx))
+        filename = '{}/img/{}.png'.format(self.data_dir, idx)
+        im = Image.open(filename)
+        print('load', filename)
 
         in_ = np.array(im, dtype=np.float32)
         in_ = in_[:, :, :1]
@@ -227,7 +239,10 @@ class SBDDSegDataLayer(caffe.Layer):
         #import scipy.io
         #mat = scipy.io.loadmat('{}/cls/{}.mat'.format(self.sbdd_dir, idx))
         #label = mat['GTcls'][0]['Segmentation'][0].astype(np.uint8)
-        label = np.load('{}/cls/{}.npy'.format(self.sbdd_dir, idx))
+        filename = '{}/cls/{}.npy'.format(self.data_dir, idx)
+        label = np.load(filename)
+        print('load', filename)
+
         label = label[np.newaxis, ...]
         return label
 
