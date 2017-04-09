@@ -52,14 +52,16 @@ def fcn(split):
     n.pool5 = max_pool(n.relu5_1)
 
 
+    # TODO: try subtracting mean
+
     label_count = 2
 
     # fully conv
     n.fc6, n.relu6 = conv_relu(n.pool5, 4096, ks=3, pad=0)
     n.drop6 = L.Dropout(n.relu6, dropout_ratio=0.5, in_place=True)
-    n.fc7, n.relu7 = conv_relu(n.drop6, 4096, ks=1, pad=0)
-    n.drop7 = L.Dropout(n.relu7, dropout_ratio=0.5, in_place=True)
-    n.score_fr = L.Convolution(n.drop7, num_output=label_count, kernel_size=1, pad=0,
+    # n.fc7, n.relu7 = conv_relu(n.drop6, 4096, ks=1, pad=0)
+    # n.drop7 = L.Dropout(n.relu7, dropout_ratio=0.5, in_place=True)
+    n.score_fr = L.Convolution(n.drop6, num_output=label_count, kernel_size=1, pad=0,
         param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
     n.upscore2 = L.Deconvolution(n.score_fr,
         convolution_param=dict(num_output=label_count, kernel_size=4, stride=2,
