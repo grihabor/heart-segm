@@ -8,7 +8,7 @@ import numpy as np
 model = 'val.prototxt'
 #weights = 'fcn16s-heavy-pascal.caffemodel'
 
-weights = 'snapshot/train_iter_1000.caffemodel'
+weights = 'snapshot/train_iter_25.caffemodel'
 
 #caffe.set_mode_gpu();
 #caffe.set_device(0);
@@ -32,7 +32,9 @@ def get_output(i):
     image = load_image('../../data/sbdd/dataset', 'img_{}'.format(i))
     res = net.forward()
 
-    score = res['score_output2'].transpose((2, 3, 1, 0))
+    print(res.keys())
+
+    score = res['score'].transpose((2, 3, 1, 0))
     label = res['label'].transpose((2, 3, 1, 0))
     print('score shape:', score.shape)
     print('label shape:', label.shape)
