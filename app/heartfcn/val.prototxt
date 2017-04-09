@@ -5,8 +5,8 @@ layer {
   top: "label"
   python_param {
     module: "voc_layers"
-    layer: "VOCSegDataLayer"
-    param_str: "{\'voc_dir\': \'../../data/sbdd/dataset\', \'seed\': 1337, \'split\': \'test\', \'mean\': 0.0}"
+    layer: "SBDDSegDataLayer"
+    param_str: "{\'seed\': 1337, \'data_dir\': \'../../data/sbdd/dataset\', \'split\': \'test\', \'mean\': 0.0}"
   }
 }
 layer {

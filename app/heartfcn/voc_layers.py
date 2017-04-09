@@ -38,7 +38,7 @@ class VOCSegDataLayer(caffe.Layer):
         """
         # config
         params = eval(self.param_str)
-        self.data_dir = params['voc_dir']
+        self.data_dir = params['data_dir']
         self.split = params['split']
         self.mean = np.array(params['mean'])
         self.random = params.get('randomize', True)
@@ -155,7 +155,7 @@ class SBDDSegDataLayer(caffe.Layer):
         """
         # config
         params = eval(self.param_str)
-        self.data_dir = params['sbdd_dir']
+        self.data_dir = params['data_dir']
         self.split = params['split']
         self.mean = np.array(params['mean'])
         self.random = params.get('randomize', True)
@@ -241,7 +241,8 @@ class SBDDSegDataLayer(caffe.Layer):
         #label = mat['GTcls'][0]['Segmentation'][0].astype(np.uint8)
         filename = '{}/cls/{}.npy'.format(self.data_dir, idx)
         label = np.load(filename)
-        print('load', filename)
+        print('load', filename, 'max', np.max(label))
+
 
         label = label[np.newaxis, ...]
         return label

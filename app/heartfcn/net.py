@@ -15,12 +15,10 @@ def fcn(split):
     n = caffe.NetSpec()
     pydata_params = dict(split=split, mean=(0.),
             seed=1337)
-    if split == 'train':
-        pydata_params['sbdd_dir'] = '../../data/sbdd/dataset'
-        pylayer = 'SBDDSegDataLayer'
-    else:
-        pydata_params['voc_dir'] = '../../data/sbdd/dataset'
-        pylayer = 'VOCSegDataLayer'
+
+    pydata_params['data_dir'] = '../../data/sbdd/dataset'
+    pylayer = 'SBDDSegDataLayer'
+
     n.data, n.label = L.Python(module='voc_layers', layer=pylayer,
             ntop=2, param_str=str(pydata_params))
 
@@ -76,8 +74,10 @@ def fcn(split):
         param=[dict(lr_mult=0)])
 
     n.score = crop(n.upscore16, n.data)
-    n.loss = L.SoftmaxWithLoss(n.score, n.label,
-            loss_param=dict(normalize=False, ignore_label=255))
+
+    if split == 'train':
+        n.loss = L.SoftmaxWithLoss(n.score, n.label,
+                loss_param=dict(normalize=False, ignore_label=255))
 
     return n.to_proto()
 

@@ -6,7 +6,7 @@ layer {
   python_param {
     module: "voc_layers"
     layer: "SBDDSegDataLayer"
-    param_str: "{\'sbdd_dir\': \'../../data/sbdd/dataset\', \'seed\': 1337, \'split\': \'train\', \'mean\': 0.0}"
+    param_str: "{\'seed\': 1337, \'data_dir\': \'../../data/sbdd/dataset\', \'split\': \'train\', \'mean\': 0.0}"
   }
 }
 layer {
