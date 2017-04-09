@@ -109,12 +109,14 @@ class SBDDSegDataLayer(caffe.Layer):
         """
         filename = '{}/img/{}.png'.format(self.data_dir, idx)
         im = Image.open(filename)
-        print('load', filename)
+        # print('load', filename)
 
         in_ = np.array(im, dtype=np.float32)
+        in_ /= 255.
         in_ = in_[:, :, :1]
         in_ -= self.mean
         in_ = in_.transpose((2,0,1))
+        # print('image max', np.max(in_))
         return in_
 
 
@@ -128,7 +130,8 @@ class SBDDSegDataLayer(caffe.Layer):
         #label = mat['GTcls'][0]['Segmentation'][0].astype(np.uint8)
         filename = '{}/cls/{}.npy'.format(self.data_dir, idx)
         label = np.load(filename)
-        print('load', filename, 'max', np.max(label))
+        label = np.array(label, dtype=np.float32)
+        # print('load', filename, 'max', np.max(label), label.dtype)
 
 
         label = label[np.newaxis, ...]

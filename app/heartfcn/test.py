@@ -8,7 +8,7 @@ import numpy as np
 model = 'val.prototxt'
 #weights = 'fcn16s-heavy-pascal.caffemodel'
 
-weights = 'snapshot/train_iter_525.caffemodel'
+weights = 'snapshot/train_iter_175.caffemodel'
 
 #caffe.set_mode_gpu();
 #caffe.set_device(0);
@@ -33,9 +33,6 @@ def get_output(i):
     res = net.forward(blobs=['data'])
 
     image = res['data'].transpose((2, 3, 1, 0))
-    image = image[:, :, :, 0] / 255.
-
-
     score = res['score'].transpose((2, 3, 1, 0))
     label = res['label'].transpose((2, 3, 1, 0))
     score = score[:, :, :, 0]
@@ -71,8 +68,10 @@ def get_output(i):
 
     plt.subplot(height, width, 6)
     plt.title('image + grand truth')
-    plt.imshow(image + label, cmap='gray')
+    plt.imshow(np.maximum(image, label), cmap='gray')
     plt.savefig('output/img_{}.png'.format(i), bbox_inches='tight')
+
+    print(image.dtype, label.dtype)
 
 
 for i in range(10):
