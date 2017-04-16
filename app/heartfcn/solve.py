@@ -13,7 +13,7 @@ try:
 except ImportError:
     pass
 
-# weights = 'snapshot/train_iter_1000.caffemodel'
+weights = 'snapshot/train_iter_200.caffemodel'
 
 # init
 if '-gpu' in sys.argv:

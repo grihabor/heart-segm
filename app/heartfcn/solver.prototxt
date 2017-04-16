@@ -14,7 +14,7 @@ momentum: 0.99
 iter_size: 1
 max_iter: 100000
 weight_decay: 0.0005
-snapshot: 1
+snapshot: 50
 snapshot_prefix: "snapshot/train"
 test_initialization: false
 gamma: 0.95

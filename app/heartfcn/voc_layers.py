@@ -57,8 +57,7 @@ class SBDDSegDataLayer(caffe.Layer):
             raise Exception("Do not define a bottom.")
 
         # load indices for images and labels
-        split_f  = '{}/{}.txt'.format(self.data_dir,
-                                      self.split)
+        split_f = '{}/{}.txt'.format(self.data_dir, self.split)
         self.indices = open(split_f, 'r').read().splitlines()
         self.idx = 0
 
@@ -79,6 +78,8 @@ class SBDDSegDataLayer(caffe.Layer):
         # reshape tops to fit (leading 1 is for batch dimension)
         top[0].reshape(1, *self.data.shape)
         top[1].reshape(1, *self.label.shape)
+        # print(1, self.label.shape)
+        # print(1, self.data.shape)
 
 
     def forward(self, bottom, top):
@@ -109,11 +110,19 @@ class SBDDSegDataLayer(caffe.Layer):
         """
         filename = '{}/img/{}.png'.format(self.data_dir, idx)
         im = Image.open(filename)
-        # print('load', filename)
+        print('load', filename)
 
         in_ = np.array(im, dtype=np.float32)
         in_ /= 255.
         in_ = in_[:, :, :1]
+
+        """
+        with open('t.txt', 'a') as f:
+            t = str(np.mean(in_)) + '\n'
+            # f.write(t)
+            print(np.max(in_))
+        """
+
         in_ -= self.mean
         in_ = in_.transpose((2,0,1))
         # print('image max', np.max(in_))
@@ -125,14 +134,9 @@ class SBDDSegDataLayer(caffe.Layer):
         Load label image as 1 x height x width integer array of label indices.
         The leading singleton dimension is required by the loss.
         """
-        #import scipy.io
-        #mat = scipy.io.loadmat('{}/cls/{}.mat'.format(self.sbdd_dir, idx))
-        #label = mat['GTcls'][0]['Segmentation'][0].astype(np.uint8)
         filename = '{}/cls/{}.npy'.format(self.data_dir, idx)
         label = np.load(filename)
         label = np.array(label, dtype=np.float32)
-        # print('load', filename, 'max', np.max(label), label.dtype)
-
 
         label = label[np.newaxis, ...]
         return label

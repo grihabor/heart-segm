@@ -15,7 +15,7 @@ def max_pool(bottom, ks=2, stride=2):
 
 def fcn(split):
     n = caffe.NetSpec()
-    pydata_params = dict(split=split, mean=(0.),
+    pydata_params = dict(split=split, mean=(0.07269389545454547),
             seed=1337)
 
     pydata_params['data_dir'] = '../../data/sbdd/dataset'
@@ -25,7 +25,7 @@ def fcn(split):
             ntop=2, param_str=str(pydata_params))
 
     # the base net
-    n.conv1_1, n.relu1_1 = conv_relu(n.data, 64, pad=80)
+    n.conv1_1, n.relu1_1 = conv_relu(n.data, 64, pad=20)
     #n.conv1_2, n.relu1_2 = conv_relu(n.relu1_1, 64)
     n.pool1 = max_pool(n.relu1_1)
 
@@ -61,6 +61,8 @@ def fcn(split):
     n.drop6 = L.Dropout(n.relu6, dropout_ratio=0.5, in_place=True)
     # n.fc7, n.relu7 = conv_relu(n.drop6, 4096, ks=1, pad=0)
     # n.drop7 = L.Dropout(n.relu7, dropout_ratio=0.5, in_place=True)
+
+    """
     n.score_fr = L.Convolution(n.drop6, num_output=label_count, kernel_size=1, pad=0,
         param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
     n.upscore2 = L.Deconvolution(n.score_fr,
@@ -71,7 +73,6 @@ def fcn(split):
     n.score_pool4 = L.Convolution(n.pool4, num_output=label_count, kernel_size=1, pad=0,
         param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
 
-
     n.score_pool4c = crop(n.score_pool4, n.upscore2)
     n.fuse_pool4 = L.Eltwise(n.upscore2, n.score_pool4c,
             operation=P.Eltwise.SUM)
@@ -81,6 +82,36 @@ def fcn(split):
         param=[dict(lr_mult=0)])
 
     n.score = crop(n.upscore16, n.data)
+    """
+
+    n.score_fr = L.Convolution(n.drop6, num_output=label_count, kernel_size=1, pad=0,
+                               param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
+    n.upscore2 = L.Deconvolution(n.score_fr,
+                                 convolution_param=dict(num_output=label_count, kernel_size=4, stride=2,
+                                                        bias_term=False),
+                                 param=[dict(lr_mult=0)])
+
+    n.score_pool4 = L.Convolution(n.pool4, num_output=label_count, kernel_size=1, pad=0,
+                                  param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
+    n.score_pool4c = crop(n.score_pool4, n.upscore2)
+    n.fuse_pool4 = L.Eltwise(n.upscore2, n.score_pool4c,
+                             operation=P.Eltwise.SUM)
+    n.upscore_pool4 = L.Deconvolution(n.fuse_pool4,
+                                      convolution_param=dict(num_output=label_count, kernel_size=4, stride=2,
+                                                             bias_term=False),
+                                      param=[dict(lr_mult=0)])
+
+    n.score_pool3 = L.Convolution(n.pool6, num_output=label_count, kernel_size=1, pad=0,
+                                  param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
+    n.score_pool3c = crop(n.score_pool3, n.upscore_pool4)
+    n.fuse_pool3 = L.Eltwise(n.upscore_pool4, n.score_pool3c,
+                             operation=P.Eltwise.SUM)
+    n.upscore8 = L.Deconvolution(n.fuse_pool3,
+                                 convolution_param=dict(num_output=label_count, kernel_size=32, stride=16,
+                                                        bias_term=False),
+                                 param=[dict(lr_mult=0)])
+
+    n.score = crop(n.upscore8, n.data)
 
     if split == 'train':
         n.loss = L.SoftmaxWithLoss(n.score, n.label,
@@ -90,7 +121,7 @@ def fcn(split):
 
 def make_net():
     with open('train.prototxt', 'w') as f:
-        f.write(str(fcn('train')))
+        f.write(str(fcn('test')))
 
     with open('val.prototxt', 'w') as f:
         f.write(str(fcn('test')))
