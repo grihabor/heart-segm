@@ -8,7 +8,7 @@ import numpy as np
 model = 'val.prototxt'
 #weights = 'fcn16s-heavy-pascal.caffemodel'
 
-weights = 'snapshot/train_iter_50.caffemodel'
+weights = 'snapshot/train_iter_100.caffemodel'
 
 #caffe.set_mode_gpu();
 #caffe.set_device(0);
@@ -42,6 +42,7 @@ def get_output(i):
     height = 2
 
     image = img_as_float(np.reshape(image[:, :, 0], image.shape[:2]))
+    image += 0.07269389545454547
 
     plt.subplot(height, width, 1)
     plt.title('target image')
@@ -53,25 +54,30 @@ def get_output(i):
     plt.title('network output\nlabel 1')
     plt.imshow(score[:, :, 1], cmap='gray')
 
-    prob_threshold = 0.5
-    binary_score = (score[:, :, 1] > prob_threshold).astype(np.float)
+    prob_threshold = 0.99
+
+    score = score[:, :, 1]
+    score_min = np.min(score)
+    score_max = np.max(score)
+    score = (score - score_min) / (score_max - score_min)
+
+    binary_score = (score > prob_threshold).astype(np.float)
 
     plt.subplot(height, width, 4)
     plt.title('prob > {}'.format(prob_threshold))
     plt.imshow(binary_score, cmap='gray')
 
-    print(image, image.shape)
+    # print(image, image.shape)
 
     plt.subplot(height, width, 5)
     plt.title('image + output')
     plt.imshow(image + binary_score, cmap='gray')
 
     plt.subplot(height, width, 6)
-    plt.title('image + grand truth')
+    plt.title('image + ground truth')
     plt.imshow(np.maximum(image, label), cmap='gray')
     plt.savefig('output/img_{}.png'.format(i), bbox_inches='tight')
 
-    print(image.dtype, label.dtype)
 
 
 for i in range(10):

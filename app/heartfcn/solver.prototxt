@@ -7,14 +7,14 @@ display: 1
 average_loss: 20
 lr_policy: "step"
 # lr for unnormalized softmax
-base_lr: 1e-8
+base_lr: 1e-6
 # high momentum
 momentum: 0.99
 # no gradient accumulation
 iter_size: 1
 max_iter: 100000
 weight_decay: 0.0005
-snapshot: 50
+snapshot: 100
 snapshot_prefix: "snapshot/train"
 test_initialization: false
 gamma: 0.95

@@ -6,7 +6,7 @@ def conv_relu(bottom, nout, ks=3, stride=1, pad=1):
     conv = L.Convolution(
         bottom, kernel_size=ks, stride=stride, num_output=nout, pad=pad,
         weight_filler=dict(type='xavier'),
-        bias_filler=dict(type="constant", value=0.1),
+        bias_filler=dict(type="constant", value=0.01),
         param=[dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)])
     return conv, L.ReLU(conv, in_place=True)
 
@@ -41,12 +41,12 @@ def fcn(split):
     n.conv6_1, n.relu6_1 = conv_relu(n.pool3, 512)
     n.pool6 = max_pool(n.relu6_1)
 
-    n.conv4_1, n.relu4_1 = conv_relu(n.pool6, 512)
+    n.conv4_1, n.relu4_1 = conv_relu(n.pool6, 1024)
     #n.conv4_2, n.relu4_2 = conv_relu(n.relu4_1, 512)
     #n.conv4_3, n.relu4_3 = conv_relu(n.relu4_2, 512)
     n.pool4 = max_pool(n.relu4_1)
 
-    n.conv5_1, n.relu5_1 = conv_relu(n.pool4, 512)
+    n.conv5_1, n.relu5_1 = conv_relu(n.pool4, 1024)
     #n.conv5_2, n.relu5_2 = conv_relu(n.relu5_1, 512)
     #n.conv5_3, n.relu5_3 = conv_relu(n.relu5_2, 512)
     n.pool5 = max_pool(n.relu5_1)
@@ -121,7 +121,7 @@ def fcn(split):
 
 def make_net():
     with open('train.prototxt', 'w') as f:
-        f.write(str(fcn('test')))
+        f.write(str(fcn('train')))
 
     with open('val.prototxt', 'w') as f:
         f.write(str(fcn('test')))

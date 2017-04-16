@@ -1,3 +1,5 @@
+import functools
+
 try:
     import caffe
 except ImportError as e:
@@ -95,11 +97,10 @@ class SBDDSegDataLayer(caffe.Layer):
             if self.idx == len(self.indices):
                 self.idx = 0
 
-
     def backward(self, top, propagate_down, bottom):
         pass
 
-
+    # @functools.lru_cache(maxsize=128)
     def load_image(self, idx):
         """
         Load input image and preprocess for Caffe:
@@ -117,7 +118,7 @@ class SBDDSegDataLayer(caffe.Layer):
         in_ = in_[:, :, :1]
 
         """
-        with open('t.txt', 'a') as f:
+        with open('train.txt', 'a') as f:
             t = str(np.mean(in_)) + '\n'
             # f.write(t)
             print(np.max(in_))
@@ -128,7 +129,7 @@ class SBDDSegDataLayer(caffe.Layer):
         # print('image max', np.max(in_))
         return in_
 
-
+    # @functools.lru_cache(maxsize=128)
     def load_label(self, idx):
         """
         Load label image as 1 x height x width integer array of label indices.
