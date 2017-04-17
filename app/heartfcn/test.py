@@ -8,7 +8,7 @@ import numpy as np
 model = 'val.prototxt'
 #weights = 'fcn16s-heavy-pascal.caffemodel'
 
-weights = 'snapshot/train_iter_100.caffemodel'
+weights = 'snapshot/train_iter_4000.caffemodel'
 
 #caffe.set_mode_gpu();
 #caffe.set_device(0);
