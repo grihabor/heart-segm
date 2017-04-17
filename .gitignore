@@ -3,3 +3,4 @@ data
 fcn.berkeleyvision.org
 *.caffemodel
 *.pyc
+trained_models
