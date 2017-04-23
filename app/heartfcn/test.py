@@ -8,7 +8,7 @@ import numpy as np
 model = 'val.prototxt'
 #weights = 'fcn16s-heavy-pascal.caffemodel'
 
-weights = 'snapshot/train_iter_4000.caffemodel'
+weights = 'snapshot/train_iter_300.caffemodel'
 
 #caffe.set_mode_gpu();
 #caffe.set_device(0);
@@ -54,7 +54,7 @@ def get_output(i):
     plt.title('network output\nlabel 1')
     plt.imshow(score[:, :, 1], cmap='gray')
 
-    prob_threshold = 0.99
+    prob_threshold = 0.95
 
     score = score[:, :, 1]
     score_min = np.min(score)
